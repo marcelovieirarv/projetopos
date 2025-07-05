@@ -1,0 +1,47 @@
+# Versão da especificação do Docker Compose
+version: '3.8'
+
+services:
+
+  # 1. Banco de Dados de Documentos
+  mongo:
+    image: mongo:latest
+    container_name: mongo-datastore
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+  # 2. Banco de Dados de Chave-Valor
+  redis:
+    image: redis:latest
+    container_name: redis-datastore
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+
+  # 3. Banco de Dados Colunar
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-server 
+    environment:
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: root
+    ports:
+      - "8123:8123" 
+      - "9000:9000" 
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse/
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    restart: always
+
+volumes:
+  mongo_data:
+  redis_data:
+  clickhouse_data:
